@@ -128,7 +128,8 @@ export class WechatPaymentBox extends Component {
 
 		// Only show if chat is available and we have a business plan in the cart.
 		const showPaymentChatButton =
-			presaleChatAvailable && some( cart.products, isWpComBusinessPlan );
+			presaleChatAvailable &&
+			some( cart.products, ( { product_slug } ) => isWpComBusinessPlan( product_slug ) );
 
 		// Wechat qr codes get set on desktop instead of redirecting
 		if ( redirectUrl && ! isMobile ) {

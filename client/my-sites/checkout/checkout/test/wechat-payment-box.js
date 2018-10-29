@@ -8,7 +8,6 @@
  */
 import React from 'react';
 import { shallow } from 'enzyme';
-import { identity } from 'lodash';
 
 /**
  * Internal dependencies
@@ -42,35 +41,9 @@ jest.mock( 'lib/cart-values', () => ( {
 	},
 } ) );
 
-jest.mock( 'i18n-calypso', () => ( {
-	localize: Component => props => <Component { ...props } translate={ x => x } />,
-	translate: x => x,
-} ) );
-
-jest.mock( '../terms-of-service', () => {
-	const react = require( 'react' );
-	return class TermsOfService extends react.Component {};
-} );
-
-import TermsOfService from '../terms-of-service';
-
-jest.mock( '../payment-chat-button', () => {
-	const react = require( 'react' );
-	return class PaymentChatButton extends react.Component {};
-} );
-
-import PaymentChatButton from '../payment-chat-button';
-
-jest.mock( '../wechat-payment-qrcode', () => {
-	const react = require( 'react' );
-	return class WechatPaymentQRCode extends react.Component {};
-} );
-
-import WechatPaymentQRCode from '../wechat-payment-qrcode';
-
 const defaultProps = {
 	cart: { total_cost: 100, products: [] },
-	translate: identity,
+	translate: x => x,
 	countriesList: [
 		{
 			code: 'US',
@@ -83,14 +56,14 @@ const defaultProps = {
 	],
 	paymentType: 'default',
 	transaction: {},
-	redirectTo: identity,
+	redirectTo: x => x,
 	selectedSite: { slug: 'example.com' },
-	showErrorNotice: identity,
-	showInfoNotice: identity,
-	createRedirect: identity,
+	showErrorNotice: x => x,
+	showInfoNotice: x => x,
+	createRedirect: x => x,
 	pending: false,
 	failure: false,
-	reset: identity,
+	reset: x => x,
 	redirectUrl: null,
 	orderId: null,
 	isMobile: false,
@@ -99,10 +72,13 @@ const defaultProps = {
 describe( 'WechatPaymentBox', () => {
 	test( 'has correct components and css', () => {
 		const wrapper = shallow( <WechatPaymentBox { ...defaultProps } /> );
+
 		expect( wrapper.find( '.checkout__payment-box-section' ) ).toHaveLength( 1 );
 		expect( wrapper.find( '.checkout__payment-box-actions' ) ).toHaveLength( 1 );
 		expect( wrapper.find( '[name="name"]' ) ).toHaveLength( 1 );
-		expect( wrapper.contains( <TermsOfService /> ) );
+		expect( wrapper.find( 'Localized(TermsOfService)' ) ).toHaveLength( 1 );
+		expect( wrapper.find( 'Connect(Localized(CartCoupon))' ) ).toHaveLength( 1 );
+		expect( wrapper.find( 'Localized(CartToggle)' ) ).toHaveLength( 1 );
 	} );
 
 	const businessPlans = [ PLAN_BUSINESS, PLAN_BUSINESS_2_YEARS ];
@@ -117,7 +93,8 @@ describe( 'WechatPaymentBox', () => {
 				},
 			};
 			const wrapper = shallow( <WechatPaymentBox { ...props } /> );
-			expect( wrapper.contains( <PaymentChatButton /> ) );
+
+			expect( wrapper.find( 'Connect(Localized(PaymentChatButton))' ) ).toHaveLength( 1 );
 		} );
 	} );
 
@@ -131,7 +108,7 @@ describe( 'WechatPaymentBox', () => {
 				},
 			};
 			const wrapper = shallow( <WechatPaymentBox { ...props } /> );
-			expect( ! wrapper.contains( <PaymentChatButton /> ) );
+			expect( wrapper.find( 'Connect(Localized(PaymentChatButton))' ) ).toHaveLength( 0 );
 		} );
 	} );
 
@@ -161,7 +138,7 @@ describe( 'WechatPaymentBox', () => {
 				},
 			};
 			const wrapper = shallow( <WechatPaymentBox { ...props } /> );
-			expect( ! wrapper.contains( <PaymentChatButton /> ) );
+			expect( wrapper.find( 'Connect(Localized(PaymentChatButton))' ) ).toHaveLength( 0 );
 		} );
 	} );
 
@@ -204,7 +181,7 @@ describe( 'WechatPaymentBox', () => {
 				<WechatPaymentBox { ...defaultProps } redirectUrl={ redirectUrl } isMobile={ false } />
 			);
 
-			expect( wrapper.contains( <WechatPaymentQRCode /> ) );
+			expect( wrapper.find( 'Connect(Localized(WechatPaymentQRCode))' ) ).toHaveLength( 1 );
 		} );
 	} );
 } );
