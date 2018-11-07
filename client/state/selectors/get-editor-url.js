@@ -6,8 +6,14 @@ import isCalypsoifyGutenbergEnabled from 'state/selectors/is-calypsoify-gutenber
 import { getSiteAdminUrl, getSiteSlug } from 'state/sites/selectors';
 import { getEditorPath } from 'state/ui/editor/selectors';
 
-export const getEditorUrl = ( state, siteId, postId = null, postType = 'post' ) => {
-	if ( isCalypsoifyGutenbergEnabled( state, siteId ) ) {
+export const getEditorUrl = (
+	state,
+	siteId,
+	postId = null,
+	postType = 'post',
+	{ skipSelectedEditorCheck } = {}
+) => {
+	if ( isCalypsoifyGutenbergEnabled( state, siteId, { skipSelectedEditorCheck } ) ) {
 		const siteAdminUrl = getSiteAdminUrl( state, siteId );
 
 		if ( postId ) {
